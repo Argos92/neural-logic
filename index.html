@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEURAL LOGIC — автоматизация бизнес-процессов с ИИ и RAG</title>
+<meta name="description" content="Автоматизируем внутренние бизнес-процессы: ИИ-ассистенты, RAG-базы знаний, интеграции с 1С, CRM, ERP. Пилот за 4–6 недель.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@latest/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@latest/500.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@latest/600.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@latest/700.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/unbounded@latest/500.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/unbounded@latest/700.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/unbounded@latest/900.css">
+<style>
+:root{
+  --bg:#060a13; --panel:#0c1322; --panel2:#111b30;
+  --line:rgba(148,163,184,.14); --line2:rgba(148,163,184,.25);
+  --txt:#e8eef9; --mut:#93a0b8;
+  --cyan:#38e1ff; --violet:#8b5cf6; --gold:#f5c26b;
+  --grad:linear-gradient(92deg,#38e1ff 0%,#8b5cf6 100%);
+  --rad:18px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-serif;font-size:16px;line-height:1.65;overflow-x:hidden}
+::selection{background:rgba(56,225,255,.3)}
+h1,h2,h3,.disp{font-family:'Unbounded',sans-serif}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+section{padding:96px 0;scroll-margin-top:86px;position:relative}
+.container{max-width:1180px;margin:0 auto;padding:0 24px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);border:1px solid rgba(56,225,255,.35);background:rgba(56,225,255,.07);padding:7px 14px;border-radius:999px;margin-bottom:20px}
+.eyebrow::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+h2{font-size:clamp(26px,3.6vw,40px);font-weight:700;line-height:1.2;margin-bottom:16px}
+.sub{color:var(--mut);max-width:640px;font-size:17px}
+.grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-family:'Inter',sans-serif;font-weight:600;font-size:15px;padding:15px 28px;border-radius:14px;border:none;cursor:pointer;transition:transform .25s,box-shadow .25s,background .25s;white-space:nowrap}
+.btn-primary{background:var(--grad);color:#041018;box-shadow:0 8px 30px rgba(56,225,255,.25)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(139,92,246,.4)}
+.btn-ghost{background:transparent;color:var(--txt);border:1px solid var(--line2)}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn-sm{padding:11px 20px;font-size:14px;border-radius:12px}
+.btn-full{width:100%}
+/* ---------- header ---------- */
+header{position:fixed;top:0;left:0;right:0;z-index:100;transition:background .3s,border .3s;border-bottom:1px solid transparent}
+header.scrolled{background:rgba(6,10,19,.85);backdrop-filter:blur(14px);border-bottom-color:var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:74px}
+.logo{display:flex;align-items:center;gap:11px;font-family:'Unbounded';font-weight:900;font-size:17px;letter-spacing:.04em}
+.logo-mark{width:34px;height:34px;border-radius:10px;background:var(--grad);display:grid;place-items:center;color:#041018;font-size:16px;font-weight:900;box-shadow:0 0 22px rgba(56,225,255,.45);flex:none}
+.nav-links{display:flex;gap:28px;font-size:14.5px;font-weight:500;color:var(--mut)}
+.nav-links a{transition:color .2s;position:relative}
+.nav-links a:hover,.nav-links a.active{color:var(--txt)}
+.nav-links a.active::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;background:var(--grad);border-radius:2px}
+.burger{display:none;background:none;border:none;cursor:pointer;width:40px;height:40px;flex-direction:column;gap:6px;align-items:center;justify-content:center}
+.burger span{width:22px;height:2px;background:var(--txt);border-radius:2px;transition:.3s}
+.mobile-menu{position:fixed;inset:0;background:rgba(6,10,19,.97);z-index:99;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;font-size:20px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .3s}
+.mobile-menu.open{opacity:1;pointer-events:auto}
+/* ---------- hero ---------- */
+.hero{padding:170px 0 90px;overflow:hidden}
+.hero::before{content:"";position:absolute;top:-200px;right:-200px;width:700px;height:700px;background:radial-gradient(circle,rgba(139,92,246,.22),transparent 65%);pointer-events:none}
+.hero::after{content:"";position:absolute;top:120px;left:-260px;width:600px;height:600px;background:radial-gradient(circle,rgba(56,225,255,.14),transparent 65%);pointer-events:none}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;position:relative;z-index:1}
+.hero h1{font-size:clamp(30px,4.4vw,52px);font-weight:900;line-height:1.14;margin-bottom:22px}
+.hero .lead{color:var(--mut);font-size:17.5px;max-width:540px;margin-bottom:34px}
+.hero-cta{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:52px}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;border-top:1px solid var(--line);padding-top:28px}
+.hstat .num{font-family:'Unbounded';font-weight:700;font-size:clamp(22px,2.4vw,30px);color:var(--txt)}
+.hstat .num b{color:var(--cyan);font-weight:700}
+.hstat p{color:var(--mut);font-size:13px;margin-top:4px}
+.hero-visual{position:relative}
+.hero-visual img{border-radius:24px;border:1px solid var(--line2);box-shadow:0 30px 80px rgba(0,0,0,.55)}
+.float-badge{position:absolute;background:rgba(12,19,34,.9);backdrop-filter:blur(10px);border:1px solid var(--line2);border-radius:14px;padding:12px 18px;font-size:13px;font-weight:600;box-shadow:0 12px 34px rgba(0,0,0,.45);animation:floaty 5s ease-in-out infinite}
+.float-badge b{display:block;font-family:'Unbounded';font-size:17px;color:var(--cyan)}
+.fb1{top:8%;left:-34px}
+.fb2{bottom:16%;right:-26px;animation-delay:1.4s}
+.fb2 b{color:var(--violet)}
+.fb3{bottom:-22px;left:14%;animation-delay:2.6s}
+.fb3 b{color:var(--gold)}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+/* ---------- marquee ---------- */
+.marquee-wrap{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;overflow:hidden;background:rgba(12,19,34,.5)}
+.marquee{display:flex;gap:56px;width:max-content;animation:mar 28s linear infinite}
+.marquee span{font-family:'Unbounded';font-size:13px;font-weight:500;letter-spacing:.12em;color:var(--mut);text-transform:uppercase;white-space:nowrap}
+.marquee span i{font-style:normal;color:var(--cyan);margin-left:56px}
+@keyframes mar{to{transform:translateX(-50%)}}
+/* ---------- cards / grids ---------- */
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--rad);padding:30px;transition:transform .3s,border .3s,box-shadow .3s;position:relative;overflow:hidden}
+.card:hover{transform:translateY(-5px);border-color:rgba(56,225,255,.4);box-shadow:0 18px 50px rgba(0,0,0,.4)}
+.icon-box{width:50px;height:50px;border-radius:13px;background:rgba(56,225,255,.1);border:1px solid rgba(56,225,255,.3);display:grid;place-items:center;color:var(--cyan);margin-bottom:20px}
+.card h3{font-size:17px;font-weight:700;margin-bottom:10px;line-height:1.35}
+.card p{color:var(--mut);font-size:14.5px}
+.card .tagline{margin-top:16px;font-size:12.5px;color:var(--cyan);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+/* ---------- pains ---------- */
+.pain-num{font-family:'Unbounded';font-size:13px;color:var(--violet);font-weight:700;margin-bottom:14px;display:block}
+/* ---------- services ---------- */
+.services-cta{margin-top:44px;display:flex;justify-content:center}
+/* ---------- RAG ---------- */
+.rag-panel{background:linear-gradient(160deg,rgba(139,92,246,.09),rgba(56,225,255,.05));border:1px solid var(--line);border-radius:26px;padding:56px;position:relative;overflow:hidden}
+.rag-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:44px;position:relative}
+.rag-steps::before{content:"";position:absolute;top:31px;left:8%;right:8%;height:2px;background:linear-gradient(90deg,var(--cyan),var(--violet));opacity:.45;z-index:0}
+.rag-step{text-align:center;position:relative;z-index:1}
+.rag-dot{width:62px;height:62px;margin:0 auto 16px;border-radius:18px;background:var(--panel2);border:1px solid var(--line2);display:grid;place-items:center;color:var(--cyan);transition:.3s}
+.rag-step:hover .rag-dot{border-color:var(--cyan);box-shadow:0 0 26px rgba(56,225,255,.35);transform:translateY(-4px)}
+.rag-step h4{font-size:14px;font-weight:700;margin-bottom:6px;font-family:'Inter'}
+.rag-step p{font-size:12.5px;color:var(--mut)}
+.rag-note{margin-top:40px;display:flex;gap:14px;align-items:flex-start;background:rgba(6,10,19,.55);border:1px solid var(--line);border-radius:16px;padding:20px 24px;color:var(--mut);font-size:14.5px}
+.rag-note svg{flex:none;color:var(--gold);margin-top:2px}
+/* ---------- cases ---------- */
+.case-card{padding:0;display:flex;flex-direction:column}
+.case-card .img-wrap{overflow:hidden;border-bottom:1px solid var(--line)}
+.case-card img{aspect-ratio:16/10;object-fit:cover;width:100%;transition:transform .6s}
+.case-card:hover img{transform:scale(1.06)}
+.case-body{padding:28px;display:flex;flex-direction:column;gap:14px;flex:1}
+.case-ind{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--violet);font-weight:700}
+.case-metrics{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto}
+.metric{background:rgba(56,225,255,.08);border:1px solid rgba(56,225,255,.25);color:var(--cyan);font-weight:700;font-size:12.5px;padding:7px 12px;border-radius:10px}
+/* ---------- calculator ---------- */
+.calc-wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:34px;background:var(--panel);border:1px solid var(--line);border-radius:26px;padding:48px}
+.calc-field{margin-bottom:28px}
+.calc-field label{display:flex;justify-content:space-between;font-size:14px;font-weight:600;margin-bottom:12px;color:var(--txt)}
+.calc-field label output{color:var(--cyan);font-family:'Unbounded';font-size:14px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:6px;background:rgba(148,163,184,.2);outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--grad);border:3px solid #06101c;box-shadow:0 0 0 2px var(--cyan),0 0 18px rgba(56,225,255,.5);cursor:grab}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--grad);border:3px solid #06101c;box-shadow:0 0 0 2px var(--cyan);cursor:grab}
+.calc-results{background:var(--panel2);border:1px solid var(--line2);border-radius:20px;padding:34px;display:flex;flex-direction:column;gap:20px}
+.res-row{display:flex;justify-content:space-between;align-items:baseline;gap:14px;border-bottom:1px dashed var(--line2);padding-bottom:14px}
+.res-row:last-of-type{border:none;padding-bottom:0}
+.res-row span{color:var(--mut);font-size:14px}
+.res-row b{font-family:'Unbounded';font-size:clamp(16px,1.7vw,22px);color:var(--txt);white-space:nowrap}
+.res-row b.hl{color:var(--cyan)}
+.calc-note{font-size:12.5px;color:var(--mut)}
+/* ---------- pricing ---------- */
+.price-card{display:flex;flex-direction:column;gap:18px}
+.price-card.popular{border-color:rgba(56,225,255,.5);background:linear-gradient(170deg,rgba(56,225,255,.08),var(--panel));box-shadow:0 20px 60px rgba(56,225,255,.12)}
+.pop-badge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--grad);color:#041018;font-weight:700;font-size:12px;padding:6px 16px;border-radius:999px;letter-spacing:.06em}
+.price{font-family:'Unbounded';font-size:26px;font-weight:700}
+.price small{font-size:13px;color:var(--mut);font-family:'Inter';font-weight:500}
+.feat{list-style:none;display:flex;flex-direction:column;gap:11px;font-size:14.5px;color:var(--mut)}
+.feat li{display:flex;gap:10px;align-items:flex-start}
+.feat li::before{content:"✓";color:var(--cyan);font-weight:700;flex:none}
+.price-card .btn{margin-top:auto}
+/* ---------- process ---------- */
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;counter-reset:st}
+.step{position:relative;padding-top:26px}
+.step::before{content:"";position:absolute;top:0;left:0;right:-18px;height:2px;background:linear-gradient(90deg,var(--line2),transparent)}
+.step-num{font-family:'Unbounded';font-weight:900;font-size:34px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;display:block;margin-bottom:14px}
+.step h4{font-size:15.5px;margin-bottom:8px}
+.step p{font-size:13.5px;color:var(--mut)}
+.step .dur{margin-top:12px;display:inline-block;font-size:12px;color:var(--violet);border:1px solid rgba(139,92,246,.4);border-radius:999px;padding:4px 12px;font-weight:600}
+/* ---------- why ---------- */
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+/* ---------- testimonials ---------- */
+.t-slider{overflow:hidden;border-radius:24px}
+.t-track{display:flex;transition:transform .55s cubic-bezier(.7,0,.3,1)}
+.t-slide{min-width:100%;background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:48px}
+.t-quote{font-size:clamp(16px,1.8vw,20px);line-height:1.7;color:var(--txt);margin-bottom:28px}
+.t-quote::before{content:"«";color:var(--cyan)}
+.t-quote::after{content:"»";color:var(--cyan)}
+.t-author{display:flex;align-items:center;gap:16px}
+.t-ava{width:52px;height:52px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-family:'Unbounded';font-weight:700;color:#041018}
+.t-author b{display:block;font-size:15px}
+.t-author span{font-size:13px;color:var(--mut)}
+.t-ctrl{display:flex;gap:12px;align-items:center;margin-top:24px}
+.t-btn{width:46px;height:46px;border-radius:50%;border:1px solid var(--line2);background:none;color:var(--txt);cursor:pointer;font-size:18px;transition:.25s}
+.t-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.t-dots{display:flex;gap:8px;margin-left:8px}
+.t-dot{width:9px;height:9px;border-radius:50%;background:var(--line2);cursor:pointer;transition:.3s}
+.t-dot.on{background:var(--cyan);transform:scale(1.3)}
+/* ---------- faq ---------- */
+.faq-item{border:1px solid var(--line);border-radius:16px;background:var(--panel);margin-bottom:14px;overflow:hidden}
+.faq-q{width:100%;display:flex;justify-content:space-between;align-items:center;gap:18px;background:none;border:none;color:var(--txt);font-family:'Inter';font-size:16px;font-weight:600;text-align:left;padding:22px 26px;cursor:pointer}
+.faq-q .arr{flex:none;width:30px;height:30px;border-radius:50%;border:1px solid var(--line2);display:grid;place-items:center;transition:.35s;color:var(--cyan)}
+.faq-item.open .arr{transform:rotate(45deg);border-color:var(--cyan)}
+.faq-a{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s ease}
+.faq-item.open .faq-a{grid-template-rows:1fr}
+.faq-a-in{overflow:hidden}
+.faq-a p{padding:0 26px 24px;color:var(--mut);font-size:15px}
+/* ---------- contact ---------- */
+.contact-panel{background:linear-gradient(150deg,rgba(56,225,255,.08),rgba(139,92,246,.08));border:1px solid var(--line2);border-radius:28px;padding:56px;display:grid;grid-template-columns:1fr 1fr;gap:56px}
+.contact-info h2{margin-bottom:18px}
+.contact-info p{color:var(--mut);margin-bottom:30px}
+.c-lines{display:flex;flex-direction:column;gap:14px;font-size:15px}
+.c-lines a{color:var(--txt);font-weight:600;transition:color .2s}
+.c-lines a:hover{color:var(--cyan)}
+.c-lines span{color:var(--mut)}
+.form-box{background:rgba(6,10,19,.6);border:1px solid var(--line);border-radius:20px;padding:36px}
+.f-row{margin-bottom:18px}
+.f-row label{display:block;font-size:13px;font-weight:600;color:var(--mut);margin-bottom:8px}
+.f-row input,.f-row textarea{width:100%;background:var(--panel2);border:1px solid var(--line2);border-radius:12px;padding:14px 16px;color:var(--txt);font-family:'Inter';font-size:15px;outline:none;transition:border .25s,box-shadow .25s}
+.f-row input:focus,.f-row textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(56,225,255,.15)}
+.f-row textarea{resize:vertical;min-height:96px}
+.f-row .err{border-color:#ff5d7a!important}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;color:var(--mut);margin:18px 0 22px}
+.consent input{width:17px;height:17px;accent-color:var(--cyan);margin-top:2px;flex:none}
+.form-success{display:none;text-align:center;padding:40px 10px}
+.form-success.show{display:block;animation:pop .5s ease}
+.form-success .ok{width:74px;height:74px;margin:0 auto 22px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-size:32px;color:#041018;box-shadow:0 0 40px rgba(56,225,255,.5)}
+@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+/* ---------- footer ---------- */
+footer{border-top:1px solid var(--line);padding:44px 0;color:var(--mut);font-size:14px}
+.foot{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center}
+/* ---------- reveal ---------- */
+.rv{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+.rv.on{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}
+/* ---------- responsive ---------- */
+@media(max-width:1024px){
+  .hero-grid{grid-template-columns:1fr;gap:48px}
+  .hero-stats{grid-template-columns:repeat(2,1fr)}
+  .grid3,.grid4,.why-grid{grid-template-columns:repeat(2,1fr)}
+  .rag-steps{grid-template-columns:repeat(3,1fr);gap:26px}
+  .rag-steps::before{display:none}
+  .steps{grid-template-columns:repeat(3,1fr);gap:26px}
+  .calc-wrap{grid-template-columns:1fr;padding:36px}
+  .contact-panel{grid-template-columns:1fr;padding:40px}
+}
+@media(max-width:768px){
+  .nav-links,.nav .btn{display:none}
+  .burger{display:flex}
+  section{padding:72px 0}
+  .grid2,.grid3,.grid4,.why-grid{grid-template-columns:1fr}
+  .rag-steps,.steps{grid-template-columns:1fr 1fr}
+  .rag-panel{padding:34px 26px}
+  .t-slide{padding:32px 26px}
+  .fb1{left:0}.fb2{right:0}
+}
+@media(max-width:560px){
+  .hero{padding-top:130px}
+  .hero-stats{grid-template-columns:1fr 1fr;gap:14px}
+  .steps,.rag-steps{grid-template-columns:1fr}
+  .contact-panel{padding:28px 20px}
+  .form-box{padding:26px 20px}
+}
+</style>
+</head>
+<body>
+
+<header id="hdr">
+  <div class="container nav">
+    <a class="logo" href="#top"><span class="logo-mark">N</span>NEURAL LOGIC</a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#services" data-scroll="services">Услуги</a>
+      <a href="#rag" data-scroll="rag">Технология RAG</a>
+      <a href="#cases" data-scroll="cases">Кейсы</a>
+      <a href="#calc" data-scroll="calc">Калькулятор</a>
+      <a href="#pricing" data-scroll="pricing">Тарифы</a>
+      <a href="#faq" data-scroll="faq">FAQ</a>
+    </nav>
+    <a href="#contact" class="btn btn-primary btn-sm" data-goto="contact">Обсудить проект</a>
+    <button class="burger" id="burger" aria-label="Меню"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#services" data-scroll="services">Услуги</a>
+  <a href="#rag" data-scroll="rag">Технология RAG</a>
+  <a href="#cases" data-scroll="cases">Кейсы</a>
+  <a href="#calc" data-scroll="calc">Калькулятор</a>
+  <a href="#pricing" data-scroll="pricing">Тарифы</a>
+  <a href="#faq" data-scroll="faq">FAQ</a>
+  <a href="#contact" class="btn btn-primary" data-goto="contact">Обсудить проект</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="container hero-grid">
+    <div>
+      <span class="eyebrow">B2B · Автоматизация · ИИ · RAG</span>
+      <h1>Бизнес-процессы, которые <span class="grad-text">работают сами</span></h1>
+      <p class="lead">Аудит, автоматизация и внедрение ИИ-ассистентов и RAG-баз знаний на ваших данных. Избавляем команды от рутины и сокращаем издержки процессов до 70%.</p>
+      <div class="hero-cta">
+        <a href="#contact" class="btn btn-primary" data-goto="contact">Получить бесплатный аудит
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a href="#cases" class="btn btn-ghost" data-scroll="cases">Смотреть кейсы</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hstat"><div class="num"><span data-count="60">0</span><b>+</b></div><p>проектов автоматизации</p></div>
+        <div class="hstat"><div class="num"><span data-count="320">0</span><b>%</b></div><p>средний ROI за первый год</p></div>
+        <div class="hstat"><div class="num"><b>×</b><span data-count="3">0</span></div><p>ускорение типовых процессов</p></div>
+        <div class="hstat"><div class="num">4–6</div><p>недель до работающего пилота</p></div>
+      </div>
+    </div>
+    <div class="hero-visual rv">
+      <img src="https://image.qwenlm.ai/public_source/df5b9c73-41c8-4701-91b2-b3a6584dfdbb/124d4e4eb-73dc-4788-9ed3-9937d0624c2d.png" alt="ИИ автоматизирует бизнес-процессы">
+      <div class="float-badge fb1"><b>−68%</b>времени обработки</div>
+      <div class="float-badge fb2"><b>24/7</b>ИИ-ассистент</div>
+      <div class="float-badge fb3"><b>+320%</b>ROI</div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee-wrap">
+  <div class="marquee" id="marquee">
+    <span>1С<i>◆</i></span><span>Bitrix24<i>◆</i></span><span>amoCRM<i>◆</i></span><span>YandexGPT<i>◆</i></span><span>GigaChat<i>◆</i></span><span>LangChain<i>◆</i></span><span>PostgreSQL<i>◆</i></span><span>RabbitMQ<i>◆</i></span><span>Telegram Bot API<i>◆</i></span><span>Elasticsearch<i>◆</i></span><span>Redis<i>◆</i></span><span>S3 Storage<i>◆</i></span>
+  </div>
+</div>
+
+<!-- PAINS -->
+<section id="pains">
+  <div class="container">
+    <span class="eyebrow rv">Знакомо?</span>
+    <h2 class="rv">Если это про ваш бизнес —<br>мы знаем, что делать</h2>
+    <p class="sub rv" style="margin-bottom:48px">Типовые симптомы компаний, которые теряют деньги на неавтоматизированных процессах.</p>
+    <div class="grid4">
+      <div class="card rv"><span class="pain-num">01</span><h3>Команда тонет в рутине</h3><p>Сотрудники вручную переносят данные между таблицами, системами и письмами — часы каждый день.</p></div>
+      <div class="card rv d1"><span class="pain-num">02</span><h3>Знания заперты в головах</h3><p>Регламенты, базы знаний и опыт уходят вместе с сотрудниками. Поиск ответа занимает дни.</p></div>
+      <div class="card rv d2"><span class="pain-num">03</span><h3>Медленная обработка заявок</h3><p>Клиенты и документы ждут своей очереди. Поддержка отвечает часами, счета выставляются днями.</p></div>
+      <div class="card rv d3"><span class="pain-num">04</span><h3>Разрозненные системы</h3><p>1С, CRM, ERP и Excel не связаны между собой. Данные дублируются, ошибки множатся, отчёты врут.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="container">
+    <span class="eyebrow rv">Услуги</span>
+    <h2 class="rv">Что мы автоматизируем</h2>
+    <p class="sub rv" style="margin-bottom:48px">Полный цикл: от аудита процесса до внедрения и сопровождения решения.</p>
+    <div class="grid3">
+      <div class="card rv">
+        <div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M8 11h6M11 8v6"/></svg></div>
+        <h3>Аудит и картирование процессов</h3>
+        <p>Строим AS-IS карту процессов, находим узкие места и считаем экономику каждого. Даём дорожную карту quick wins.</p>
+        <div class="tagline">1–2 недели</div>
+      </div>
+      <div class="card rv d1">
+        <div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>
+        <h3>RPA и интеграции</h3>
+        <p>Связываем 1С, CRM, ERP, ЭДО и самописные системы в единый контур. Роботы выполняют рутинные операции без людей.</p>
+        <div class="tagline">API · шины данных · очереди</div>
+      </div>
+      <div class="card rv d2">
+        <div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 7V3M9 13h.01M15 13h.01M9 16.5h6"/></svg></div>
+        <h3>ИИ-ассистенты и чат-боты</h3>
+        <p>Цифровые сотрудники для поддержки, продаж и внутренних команд: отвечают, квалифицируют, создают заявки в CRM.</p>
+        <div class="tagline">Telegram · Web · телефония</div>
+      </div>
+      <div class="card rv">
+        <div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v7c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12v7c0 1.7 3.6 3 8 3s8-1.3 8-3v-7"/></svg></div>
+        <h3>RAG-базы знаний</h3>
+        <p>ИИ отвечает на вопросы строго по вашим документам: регламенты, договоры, прайсы, техдокументация — со ссылками на источник.</p>
+        <div class="tagline">Без галлюцинаций · с цитатами</div>
+      </div>
+      <div class="card rv d1">
+        <div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg></div>
+        <h3>Интеллектуальная обработка документов</h3>
+        <p>Извлечение данных из счетов, договоров, накладных и заявок. Классификация, валидация и автозагрузка в учётные системы.</p>
+        <div class="tagline">Точность 98%+</div>
+      </div>
+      <div class="card rv d2">
+        <div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <h3>Сопровождение и развитие</h3>
+        <p>SLA 99,5%, мониторинг, дообучение моделей и развитие решений вместе с ростом вашего бизнеса.</p>
+        <div class="tagline">SLA 99,5%</div>
+      </div>
+    </div>
+    <div class="services-cta rv">
+      <a href="#contact" class="btn btn-primary" data-goto="contact">Обсудить проект</a>
+    </div>
+  </div>
+</section>
+
+<!-- RAG -->
+<section id="rag">
+  <div class="container">
+    <div class="rag-panel rv">
+      <span class="eyebrow">Технология</span>
+      <h2>RAG: ИИ, который говорит <span class="grad-text">на данных вашего бизнеса</span></h2>
+      <p class="sub">Retrieval-Augmented Generation — модель не «придумывает», а находит ответ в ваших документах и цитирует источник.</p>
+      <div class="rag-steps">
+        <div class="rag-step"><div class="rag-dot"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/></svg></div><h4>Ваши данные</h4><p>Регламенты, wiki, CRM, прайсы, почта</p></div>
+        <div class="rag-step"><div class="rag-dot"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></div><h4>Чанкинг и эмбеддинги</h4><p>Документы превращаются в векторы смысла</p></div>
+        <div class="rag-step"><div class="rag-dot"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg></div><h4>Векторная БД</h4><p>Семантический поиск по смыслу, а не ключевым словам</p></div>
+        <div class="rag-step"><div class="rag-dot"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="7" width="16" height="12" rx="3"/><path d="M9 13h.01M15 13h.01"/></svg></div><h4>Ретривер + LLM</h4><p>Модель формирует ответ по найденным фрагментам</p></div>
+        <div class="rag-step"><div class="rag-dot"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a8 8 0 10-3 6.2L21 21l-.8-3.2A8 8 0 0021 12z"/><path d="M9 11h6M9 14h4"/></svg></div><h4>Ответ с цитатами</h4><p>Каждый ответ — со ссылкой на источник</p></div>
+      </div>
+      <div class="rag-note">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/></svg>
+        <div><b style="color:var(--txt)">Безопасно для B2B:</b> разворачиваем контур on-premise в вашем периметре или в закрытом облаке. Данные не покидают компанию, доступы — по ролям, всё под NDA.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CASES -->
+<section id="cases">
+  <div class="container">
+    <span class="eyebrow rv">Кейсы</span>
+    <h2 class="rv">Результаты в цифрах</h2>
+    <p class="sub rv" style="margin-bottom:48px">Три типовых сценария из нашей практики автоматизации.</p>
+    <div class="grid3">
+      <div class="card case-card rv">
+        <div class="img-wrap"><img src="https://image.qwenlm.ai/public_source/df5b9c73-41c8-4701-91b2-b3a6584dfdbb/1de1807bb-a2a8-4670-95fb-9dc69e2bfaa7.png" alt="Логистика"></div>
+        <div class="case-body">
+          <span class="case-ind">Логистика · 240 сотрудников</span>
+          <h3>Автоматизация обработки заказов</h3>
+          <p>Робот принимает заявки из почты и EDI, проверяет наличие, создаёт заказы в 1С и отправляет статусы клиентам.</p>
+          <div class="case-metrics"><span class="metric">92% заявок без людей</span><span class="metric">−68% времени</span></div>
+        </div>
+      </div>
+      <div class="card case-card rv d1">
+        <div class="img-wrap"><img src="https://image.qwenlm.ai/public_source/df5b9c73-41c8-4701-91b2-b3a6584dfdbb/106229ec7-3c41-436e-a324-dcba1c1db1cf.png" alt="Поддержка"></div>
+        <div class="case-body">
+          <span class="case-ind">B2B-сервис · SaaS</span>
+          <h3>RAG-ассистент службы поддержки</h3>
+          <p>ИИ отвечает по базе из 1 400 статей и договоров, эскалирует сложное людям и сам заводит тикеты в CRM.</p>
+          <div class="case-metrics"><span class="metric">×4 быстрее ответ</span><span class="metric">47% вопросов закрыто ботом</span></div>
+        </div>
+      </div>
+      <div class="card case-card rv d2">
+        <div class="img-wrap"><img src="https://image.qwenlm.ai/public_source/df5b9c73-41c8-4701-91b2-b3a6584dfdbb/1a8c96631-af3d-4284-82e2-c72c7e8329e1.png" alt="Документооборот"></div>
+        <div class="case-body">
+          <span class="case-ind">Производственный холдинг</span>
+          <h3>ИИ-проверка договоров и счетов</h3>
+          <p>Модель сверяет реквизиты, находит рисковые формулировки и расхождения со счёт-фактурами до подписания.</p>
+          <div class="case-metrics"><span class="metric">3 дня → 25 минут</span><span class="metric">−85% ошибок</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<section id="calc">
+  <div class="container">
+    <span class="eyebrow rv">Калькулятор</span>
+    <h2 class="rv">Сколько вы теряете на рутине?</h2>
+    <p class="sub rv" style="margin-bottom:44px">Подвигайте ползунки — расчёт обновится мгновенно.</p>
+    <div class="calc-wrap rv">
+      <div>
+        <div class="calc-field">
+          <label>Сотрудников на рутинных операциях <output id="vEmp">20</output></label>
+          <input type="range" id="rEmp" min="1" max="300" step="1" value="20">
+        </div>
+        <div class="calc-field">
+          <label>Часов рутины в день на человека <output id="vHrs">3</output></label>
+          <input type="range" id="rHrs" min="0.5" max="8" step="0.5" value="3">
+        </div>
+        <div class="calc-field">
+          <label>Стоимость часа сотрудника, ₽ <output id="vRate">900</output></label>
+          <input type="range" id="rRate" min="300" max="5000" step="50" value="900">
+        </div>
+        <div class="calc-field">
+          <label>Доля операций, доступных автоматизации <output id="vAuto">60%</output></label>
+          <input type="range" id="rAuto" min="20" max="90" step="5" value="60">
+        </div>
+        <p class="calc-note">* Предварительная оценка на основе средних показателей наших проектов. Точный расчёт — после бесплатного аудита.</p>
+      </div>
+      <div class="calc-results">
+        <div class="res-row"><span>Часов рутины экономится в месяц</span><b id="outHours">756 ч</b></div>
+        <div class="res-row"><span>Экономия в месяц</span><b class="hl" id="outMonth">680 400 ₽</b></div>
+        <div class="res-row"><span>Экономия в год</span><b id="outYear">8 164 800 ₽</b></div>
+        <div class="res-row"><span>Окупаемость пилота</span><b id="outPayback">≈ 1 мес</b></div>
+        <a href="#contact" class="btn btn-primary btn-full" data-goto="contact">Получить точный расчёт</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="container">
+    <span class="eyebrow rv">Форматы старта</span>
+    <h2 class="rv">Прозрачные условия входа</h2>
+    <p class="sub rv" style="margin-bottom:52px">Начните с малого — масштабируйтесь на цифрах, а не на обещаниях.</p>
+    <div class="grid3">
+      <div class="card price-card rv">
+        <h3>Аудит</h3>
+        <div class="price">от 150 000 ₽ <small>/ 1–2 недели</small></div>
+        <ul class="feat">
+          <li>Карта процессов AS-IS и узкие места</li>
+          <li>Экономика каждого процесса</li>
+          <li>Дорожная карта автоматизации</li>
+          <li>Презентация для собственников</li>
+        </ul>
+        <a href="#contact" class="btn btn-ghost" data-goto="contact">Заказать аудит</a>
+      </div>
+      <div class="card price-card popular rv d1">
+        <span class="pop-badge">Выбирают чаще всего</span>
+        <h3>Пилот</h3>
+        <div class="price">от 390 000 ₽ <small>/ 4–6 недель</small></div>
+        <ul class="feat">
+          <li>1 процесс под ключ: робот или ИИ-ассистент</li>
+          <li>Интеграция с 1С / CRM / ЭДО</li>
+          <li>Замеры «до/после» и отчёт об эффекте</li>
+          <li>Обучение команды и 30 дней поддержки</li>
+          <li>План масштабирования на другие процессы</li>
+        </ul>
+        <a href="#contact" class="btn btn-primary" data-goto="contact">Запустить пилот</a>
+      </div>
+      <div class="card price-card rv d2">
+        <h3>Enterprise</h3>
+        <div class="price">Индивидуально</div>
+        <ul class="feat">
+          <li>Центр компетенций автоматизации</li>
+          <li>On-premise контур ИИ и RAG</li>
+          <li>SLA 99,5% и выделенная команда</li>
+          <li>Интеграционная шина и мониторинг</li>
+        </ul>
+        <a href="#contact" class="btn btn-ghost" data-goto="contact">Обсудить задачу</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process">
+  <div class="container">
+    <span class="eyebrow rv">Как работаем</span>
+    <h2 class="rv">От аудита до работающего решения</h2>
+    <div class="steps" style="margin-top:52px">
+      <div class="step rv"><span class="step-num">01</span><h4>Discovery-аудит</h4><p>Интервью с владельцами процессов, замеры времени и стоимостей.</p><span class="dur">1–2 недели</span></div>
+      <div class="step rv d1"><span class="step-num">02</span><h4>Проектирование</h4><p>Архитектура, выбор стека (LLM, RAG, RPA), смета и KPI пилота.</p><span class="dur">1 неделя</span></div>
+      <div class="step rv d2"><span class="step-num">03</span><h4>Пилот</h4><p>Собираем решение на одном процессе и показываем эффект в цифрах.</p><span class="dur">4 недели</span></div>
+      <div class="step rv d3"><span class="step-num">04</span><h4>Внедрение</h4><p>Интеграции с 1С/CRM/ERP, обучение сотрудников, запуск в прод.</p><span class="dur">2–8 недель</span></div>
+      <div class="step rv d4"><span class="step-num">05</span><h4>Развитие</h4><p>Мониторинг качества, дообучение моделей, тираж на новые процессы.</p><span class="dur">постоянно</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section id="why">
+  <div class="container">
+    <span class="eyebrow rv">Почему мы</span>
+    <h2 class="rv">Инженерный подход, а не магия ИИ</h2>
+    <div class="why-grid" style="margin-top:48px">
+      <div class="card rv"><div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/></svg></div><h3>NDA и конфиденциальность</h3><p>Данные не покидают периметр: on-premise или закрытое облако, доступы по ролям.</p></div>
+      <div class="card rv d1"><div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 17l6-6-6-6M12 19h8"/></svg></div><h3>Российский стек</h3><p>YandexGPT, GigaChat, открытые модели — работаем и в импортонезависимом контуре.</p></div>
+      <div class="card rv d2"><div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></div><h3>Эффект в деньгах</h3><p>Каждый проект начинается с экономики и заканчивается отчётом «до/после».</p></div>
+      <div class="card rv"><div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><h3>Пилот за 4–6 недель</h3><p>Быстрый вход: первое работающее решение вы видите уже через месяц.</p></div>
+      <div class="card rv d1"><div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div><h3>Обучаем вашу команду</h3><p>Передаём документацию и учим сотрудников управлять решениями самостоятельно.</p></div>
+      <div class="card rv d2"><div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 10h18M9 4v16"/></svg></div><h3>Фиксированная смета</h3><p>Стоимость и сроки пилота зафиксированы в договоре — без сюрпризов.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="reviews">
+  <div class="container">
+    <span class="eyebrow rv">Отзывы</span>
+    <h2 class="rv">Что говорят клиенты</h2>
+    <div class="t-slider rv" style="margin-top:44px">
+      <div class="t-track" id="tTrack">
+        <div class="t-slide">
+          <p class="t-quote">Раньше обработка заявки занимала до двух дней и трёх человек. Теперь робот создаёт заказ в 1С за минуты, а менеджеры занимаются только исключениями. Окупилось за первый же квартал.</p>
+          <div class="t-author"><div class="t-ava">ДК</div><div><b>Дмитрий Ковалёв</b><span>Операционный директор, логистическая компания</span></div></div>
+        </div>
+        <div class="t-slide">
+          <p class="t-quote">RAG-ассистент отвечает по нашей базе из тысячи статей лучше, чем живой сотрудник на первой линии. Главное — всегда даёт ссылку на источник, поэтому ему доверяют и клиенты, и команда.</p>
+          <div class="t-author"><div class="t-ava">АС</div><div><b>Анна Соколова</b><span>Руководитель поддержки, B2B SaaS</span></div></div>
+        </div>
+        <div class="t-slide">
+          <p class="t-quote">Боялись внедрять ИИ из-за безопасности. Команда развернула контур внутри нашего периметра, данные никуда не уходят. Юристы проверяют договоры в 10 раз быстрее.</p>
+          <div class="t-author"><div class="t-ava">МГ</div><div><b>Михаил Гринберг</b><span>ИТ-директор, производственный холдинг</span></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="t-ctrl rv">
+      <button class="t-btn" id="tPrev" aria-label="Назад">←</button>
+      <button class="t-btn" id="tNext" aria-label="Вперёд">→</button>
+      <div class="t-dots" id="tDots"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="container" style="max-width:860px">
+    <span class="eyebrow rv">FAQ</span>
+    <h2 class="rv">Частые вопросы B2B-заказчиков</h2>
+    <div style="margin-top:40px">
+      <div class="faq-item rv"><button class="faq-q">Сколько длится внедрение?<span class="arr">+</span></button><div class="faq-a"><div class="faq-a-in"><p>Пилот на одном процессе — 4–6 недель. Полноценное внедрение с интеграциями — от 2 до 4 месяцев в зависимости от количества систем и процессов.</p></div></div></div>
+      <div class="faq-item rv"><button class="faq-q">Насколько это безопасно для наших данных?<span class="arr">+</span></button><div class="faq-a"><div class="faq-a-in"><p>Работаем под NDA. Разворачиваем ИИ-контур on-premise в вашем периметре или в закрытом облаке. Настраиваем ролевые доступы, логирование и шифрование. Данные не используются для обучения внешних моделей.</p></div></div></div>
+      <div class="faq-item rv"><button class="faq-q">Можно ли использовать российские модели?<span class="arr">+</span></button><div class="faq-a"><div class="faq-a-in"><p>Да. Поддерживаем YandexGPT, GigaChat и открытые модели (LLaMA, Qwen, SAIGA) с локальным развертыванием. Подберём вариант под требования вашего ИБ-отдела.</p></div></div></div>
+      <div class="faq-item rv"><button class="faq-q">Интегрируетесь ли вы с 1С и legacy-системами?<span class="arr">+</span></button><div class="faq-a"><div class="faq-a-in"><p>Да, это наша специализация: 1С (через COM/HTTP-интерфейсы), Bitrix24, amoCRM, ЭДО, самописные системы без API — через RPA-роботов, работающих с интерфейсом как человек.</p></div></div></div>
+      <div class="faq-item rv"><button class="faq-q">Сколько это стоит?<span class="arr">+</span></button><div class="faq-a"><div class="faq-a-in"><p>Аудит — от 150 000 ₽, пилот под ключ — от 390 000 ₽. Точная смета фиксируется в договоре после аудита и не меняется.</p></div></div></div>
+      <div class="faq-item rv"><button class="faq-q">Что если пилот не даст эффекта?<span class="arr">+</span></button><div class="faq-a"><div class="faq-a-in"><p>До старта пилота мы фиксируем KPI «до/после» в договоре. Если согласованный эффект не достигнут — дорабатываем решение за свой счёт. За 60+ проектов такого не случалось.</p></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-panel rv">
+      <div class="contact-info">
+        <span class="eyebrow">Свяжитесь с нами</span>
+        <h2>Начнём с бесплатного аудита процесса</h2>
+        <p>Оставьте заявку — за 30 минут созвона покажем, какие процессы можно автоматизировать и сколько это сэкономит. Без обязательств.</p>
+        <div class="c-lines">
+          <div><span>Email:</span> <a href="mailto:hello@neurallogic.ai">hello@neurallogic.ai</a></div>
+          <div><span>Телефон:</span> <a href="tel:+74951234567">+7 (495) 123-45-67</a></div>
+          <div><span>Telegram:</span> <a href="#">@neurallogic_auto</a></div>
+          <div><span>Режим:</span> Пн–Пт, 10:00–19:00 (МСК)</div>
+        </div>
+      </div>
+      <div class="form-box">
+        <form id="leadForm" novalidate>
+          <div class="f-row"><label for="fName">Ваше имя *</label><input id="fName" type="text" placeholder="Иван" required></div>
+          <div class="f-row"><label for="fContact">Email или телефон *</label><input id="fContact" type="text" placeholder="ivan@company.ru / +7 ___" required></div>
+          <div class="f-row"><label for="fCompany">Компания</label><input id="fCompany" type="text" placeholder="ООО «Компания»"></div>
+          <div class="f-row"><label for="fMsg">Какой процесс хотите автоматизировать?</label><textarea id="fMsg" placeholder="Например: обработка заявок из почты, поддержка клиентов, проверка договоров…"></textarea></div>
+          <label class="consent"><input type="checkbox" id="fAgree" checked> Согласен на обработку персональных данных и получение ответа по заявке</label>
+          <button type="submit" class="btn btn-primary btn-full">Отправить заявку</button>
+        </form>
+        <div class="form-success" id="formSuccess">
+          <div class="ok">✓</div>
+          <h3 style="margin-bottom:10px">Заявка отправлена!</h3>
+          <p style="color:var(--mut);font-size:15px">Мы свяжемся с вами в течение рабочего дня и предложим время для бесплатного аудита.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container foot">
+    <a class="logo" href="#top" style="font-size:14px"><span class="logo-mark" style="width:28px;height:28px;font-size:13px">N</span>NEURAL LOGIC</a>
+    <div>© 2026 NEURAL LOGIC · Автоматизация бизнес-процессов с ИИ и RAG</div>
+    <div style="display:flex;gap:18px">
+      <a href="#services" data-scroll="services">Услуги</a>
+      <a href="#cases" data-scroll="cases">Кейсы</a>
+      <a href="#contact" data-goto="contact">Контакты</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  /* header scroll state */
+  var hdr=document.getElementById('hdr');
+  window.addEventListener('scroll',function(){hdr.classList.toggle('scrolled',window.scrollY>10);},{passive:true});
+
+  /* burger */
+  var burger=document.getElementById('burger'),mMenu=document.getElementById('mobileMenu');
+  burger.addEventListener('click',function(){mMenu.classList.toggle('open');});
+  mMenu.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){mMenu.classList.remove('open');});});
+
+  /* marquee duplicate for seamless loop */
+  var mq=document.getElementById('marquee');
+  mq.innerHTML+=mq.innerHTML;
+
+  /* reveal on scroll */
+  var rvObs=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');rvObs.unobserve(e.target);}});},{threshold:.12});
+  document.querySelectorAll('.rv').forEach(function(el){rvObs.observe(el);});
+
+  /* counters */
+  function animCount(el){var target=+el.getAttribute('data-count'),t0=null;
+    function step(t){if(!t0)t0=t;var p=Math.min((t-t0)/1400,1);p=1-Math.pow(1-p,3);
+      el.textContent=Math.round(target*p);if(p<1)requestAnimationFrame(step);}
+    requestAnimationFrame(step);}
+  var cObs=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){animCount(e.target);cObs.unobserve(e.target);}});},{threshold:.6});
+  document.querySelectorAll('[data-count]').forEach(function(el){cObs.observe(el);});
+
+  /* active nav link */
+  var secIds=['services','rag','cases','calc','pricing','faq'];
+  var navAs=document.querySelectorAll('#navLinks a');
+  var navObs=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){
+    navAs.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id);});}});},{rootMargin:'-40% 0px -55% 0px'});
+  secIds.forEach(function(id){var s=document.getElementById(id);if(s)navObs.observe(s);});
+
+  /* ===== Navigation scroll handler (header + mobile + footer) ===== */
+  function scrollToSection(sectionId){
+    var target=document.getElementById(sectionId);
+    if(!target)return;
+    mMenu.classList.remove('open');
+    var top=target.getBoundingClientRect().top+window.scrollY-80;
+    window.scrollTo({top:top,behavior:'smooth'});
+  }
+
+  document.querySelectorAll('[data-scroll]').forEach(function(link){
+    link.addEventListener('click',function(ev){
+      ev.preventDefault();
+      var sectionId=this.getAttribute('data-scroll');
+      scrollToSection(sectionId);
+    });
+  });
+
+  /* ===== CTA buttons -> scroll to contact form ===== */
+  document.querySelectorAll('[data-goto]').forEach(function(btn){
+    btn.addEventListener('click',function(ev){
+      ev.preventDefault();
+      mMenu.classList.remove('open');
+      var target=document.getElementById('contact');
+      var top=target.getBoundingClientRect().top+window.scrollY-70;
+      window.scrollTo({top:top,behavior:'smooth'});
+      setTimeout(function(){var f=document.getElementById('fName');if(f)f.focus({preventScroll:true});},800);
+    });
+  });
+
+  /* ===== calculator ===== */
+  var rEmp=document.getElementById('rEmp'),rHrs=document.getElementById('rHrs'),
+      rRate=document.getElementById('rRate'),rAuto=document.getElementById('rAuto');
+  var fmt=new Intl.NumberFormat('ru-RU');
+  function paintRange(r){var p=(r.value-r.min)/(r.max-r.min)*100;
+    r.style.background='linear-gradient(90deg,#38e1ff '+p+'%,rgba(148,163,184,.2) '+p+'%)';}
+  function recalc(){
+    var emp=+rEmp.value,hrs=+rHrs.value,rate=+rRate.value,auto=+rAuto.value;
+    document.getElementById('vEmp').textContent=emp;
+    document.getElementById('vHrs').textContent=hrs;
+    document.getElementById('vRate').textContent=fmt.format(rate);
+    document.getElementById('vAuto').textContent=auto+'%';
+    var hours=emp*hrs*21*auto/100;
+    var month=hours*rate, year=month*12;
+    var impl=350000+emp*4000;
+    var pay=Math.max(1,Math.ceil(impl/Math.max(month,1)));
+    document.getElementById('outHours').textContent=fmt.format(Math.round(hours))+' ч';
+    document.getElementById('outMonth').textContent=fmt.format(Math.round(month))+' ₽';
+    document.getElementById('outYear').textContent=fmt.format(Math.round(year))+' ₽';
+    document.getElementById('outPayback').textContent='≈ '+pay+' мес';
+    [rEmp,rHrs,rRate,rAuto].forEach(paintRange);
+  }
+  [rEmp,rHrs,rRate,rAuto].forEach(function(r){r.addEventListener('input',recalc);});
+  recalc();
+
+  /* ===== testimonials slider ===== */
+  var track=document.getElementById('tTrack'),slides=track.children.length,idx=0,autoT;
+  var dotsBox=document.getElementById('tDots');
+  for(var i=0;i<slides;i++){var d=document.createElement('div');d.className='t-dot'+(i===0?' on':'');d.setAttribute('data-i',i);dotsBox.appendChild(d);}
+  function goT(n){idx=(n+slides)%slides;track.style.transform='translateX(-'+idx*100+'%)';
+    dotsBox.querySelectorAll('.t-dot').forEach(function(dd,j){dd.classList.toggle('on',j===idx);});}
+  document.getElementById('tPrev').addEventListener('click',function(){goT(idx-1);restart();});
+  document.getElementById('tNext').addEventListener('click',function(){goT(idx+1);restart();});
+  dotsBox.addEventListener('click',function(e){if(e.target.classList.contains('t-dot')){goT(+e.target.getAttribute('data-i'));restart();}});
+  function restart(){clearInterval(autoT);autoT=setInterval(function(){goT(idx+1);},6000);}
+  restart();
+
+  /* ===== FAQ accordion ===== */
+  document.querySelectorAll('.faq-q').forEach(function(q){
+    q.addEventListener('click',function(){
+      var item=q.parentElement,open=item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(function(o){o.classList.remove('open');});
+      if(!open)item.classList.add('open');
+    });
+  });
+
+  /* ===== form ===== */
+  var form=document.getElementById('leadForm');
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    var ok=true;
+    [['fName',function(v){return v.trim().length>=2;}],['fContact',function(v){return v.trim().length>=6;}]].forEach(function(pair){
+      var el=document.getElementById(pair[0]);
+      var valid=pair[1](el.value);
+      el.classList.toggle('err',!valid);
+      if(!valid)ok=false;
+    });
+    if(!document.getElementById('fAgree').checked)ok=false;
+    if(!ok)return;
+    form.style.display='none';
+    document.getElementById('formSuccess').classList.add('show');
+  });
+  ['fName','fContact'].forEach(function(id){
+    document.getElementById(id).addEventListener('input',function(){this.classList.remove('err');});
+  });
+})();
+</script>
+</body>
+</html>
