@@ -181,13 +181,9 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .faq-a-in{overflow:hidden}
 .faq-a p{padding:0 26px 24px;color:var(--mut);font-size:15px}
 /* ---------- contact ---------- */
-.contact-panel{background:linear-gradient(150deg,rgba(56,225,255,.08),rgba(139,92,246,.08));border:1px solid var(--line2);border-radius:28px;padding:56px;display:grid;grid-template-columns:1fr 1fr;gap:56px}
+.contact-panel{background:linear-gradient(150deg,rgba(56,225,255,.08),rgba(139,92,246,.08));border:1px solid var(--line2);border-radius:28px;padding:56px;display:grid;grid-template-columns:1fr;max-width:760px;margin:0 auto;gap:28px}
 .contact-info h2{margin-bottom:18px}
 .contact-info p{color:var(--mut);margin-bottom:30px}
-.c-lines{display:flex;flex-direction:column;gap:14px;font-size:15px}
-.c-lines a{color:var(--txt);font-weight:600;transition:color .2s}
-.c-lines a:hover{color:var(--cyan)}
-.c-lines span{color:var(--mut)}
 .form-box{background:rgba(6,10,19,.6);border:1px solid var(--line);border-radius:20px;padding:36px}
 .f-row{margin-bottom:18px}
 .f-row label{display:block;font-size:13px;font-weight:600;color:var(--mut);margin-bottom:8px}
@@ -197,10 +193,6 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .f-row .err{border-color:#ff5d7a!important}
 .consent{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;color:var(--mut);margin:18px 0 22px}
 .consent input{width:17px;height:17px;accent-color:var(--cyan);margin-top:2px;flex:none}
-.form-success{display:none;text-align:center;padding:40px 10px}
-.form-success.show{display:block;animation:pop .5s ease}
-.form-success .ok{width:74px;height:74px;margin:0 auto 22px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-size:32px;color:#041018;box-shadow:0 0 40px rgba(56,225,255,.5)}
-@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
 /* ---------- footer ---------- */
 footer{border-top:1px solid var(--line);padding:44px 0;color:var(--mut);font-size:14px}
 .foot{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center}
@@ -592,27 +584,17 @@ footer{border-top:1px solid var(--line);padding:44px 0;color:var(--mut);font-siz
         <span class="eyebrow">Свяжитесь с нами</span>
         <h2>Начнём с бесплатного аудита процесса</h2>
         <p>Оставьте заявку — за 30 минут созвона покажем, какие процессы можно автоматизировать и сколько это сэкономит. Без обязательств.</p>
-        <div class="c-lines">
-          <div><span>Email:</span> <a href="mailto:hello@neurallogic.ai">hello@neurallogic.ai</a></div>
-          <div><span>Телефон:</span> <a href="tel:+74951234567">+7 (495) 123-45-67</a></div>
-          <div><span>Telegram:</span> <a href="#">@neurallogic_auto</a></div>
-          <div><span>Режим:</span> Пн–Пт, 10:00–19:00 (МСК)</div>
-        </div>
       </div>
       <div class="form-box">
-        <form id="leadForm" novalidate>
-          <div class="f-row"><label for="fName">Ваше имя *</label><input id="fName" type="text" placeholder="Иван" required></div>
-          <div class="f-row"><label for="fContact">Email или телефон *</label><input id="fContact" type="text" placeholder="ivan@company.ru / +7 ___" required></div>
-          <div class="f-row"><label for="fCompany">Компания</label><input id="fCompany" type="text" placeholder="ООО «Компания»"></div>
-          <div class="f-row"><label for="fMsg">Какой процесс хотите автоматизировать?</label><textarea id="fMsg" placeholder="Например: обработка заявок из почты, поддержка клиентов, проверка договоров…"></textarea></div>
+        <form id="leadForm" action="https://docs.google.com/forms/d/e/1FAIpQLSf5GoigqJbqx73eI5CME7nB73WVUFzsOeJW0RxIAbFYTdEhfA/formResponse" method="post" target="_blank" rel="noopener" novalidate>
+          <div class="f-row"><label for="fName">Ваше имя *</label><input id="fName" name="entry.561718181" type="text" placeholder="Иван" required></div>
+          <div class="f-row"><label for="fContact">Email или телефон *</label><input id="fContact" name="entry.1616394254" type="text" placeholder="ivan@company.ru / +7 ___" required></div>
+          <div class="f-row"><label for="fCompany">Компания</label><input id="fCompany" name="entry.883951541" type="text" placeholder="ООО «Компания»"></div>
+          <div class="f-row"><label for="fMsg">Какой процесс хотите автоматизировать?</label><textarea id="fMsg" name="entry.933935461" placeholder="Например: обработка заявок из почты, поддержка клиентов, проверка договоров…"></textarea></div>
           <label class="consent"><input type="checkbox" id="fAgree" checked> Согласен на обработку персональных данных и получение ответа по заявке</label>
           <button type="submit" class="btn btn-primary btn-full">Отправить заявку</button>
         </form>
-        <div class="form-success" id="formSuccess">
-          <div class="ok">✓</div>
-          <h3 style="margin-bottom:10px">Заявка отправлена!</h3>
-          <p style="color:var(--mut);font-size:15px">Мы свяжемся с вами в течение рабочего дня и предложим время для бесплатного аудита.</p>
-        </div>
+        <p id="formStatus" role="status" style="color:var(--mut);font-size:14px;margin-top:16px">Заявка отправляется через Google Forms. Подтверждение откроется в новой вкладке.</p>
       </div>
     </div>
   </div>
@@ -625,7 +607,6 @@ footer{border-top:1px solid var(--line);padding:44px 0;color:var(--mut);font-siz
     <div style="display:flex;gap:18px">
       <a href="#services" data-scroll="services">Услуги</a>
       <a href="#cases" data-scroll="cases">Кейсы</a>
-      <a href="#contact" data-goto="contact">Контакты</a>
     </div>
   </div>
 </footer>
@@ -743,7 +724,6 @@ footer{border-top:1px solid var(--line);padding:44px 0;color:var(--mut);font-siz
   /* ===== form ===== */
   var form=document.getElementById('leadForm');
   form.addEventListener('submit',function(e){
-    e.preventDefault();
     var ok=true;
     [['fName',function(v){return v.trim().length>=2;}],['fContact',function(v){return v.trim().length>=6;}]].forEach(function(pair){
       var el=document.getElementById(pair[0]);
@@ -752,9 +732,14 @@ footer{border-top:1px solid var(--line);padding:44px 0;color:var(--mut);font-siz
       if(!valid)ok=false;
     });
     if(!document.getElementById('fAgree').checked)ok=false;
-    if(!ok)return;
-    form.style.display='none';
-    document.getElementById('formSuccess').classList.add('show');
+    if(!ok){
+      e.preventDefault();
+      document.getElementById('formStatus').textContent='Укажите имя, контакт и согласие на обработку персональных данных.';
+      var invalid=form.querySelector('.err');
+      (invalid||document.getElementById('fAgree')).focus();
+      return;
+    }
+    document.getElementById('formStatus').textContent='Проверьте результат отправки в открывшейся вкладке Google Forms. Если вкладка не открылась, разрешите её открытие и повторите отправку.';
   });
   ['fName','fContact'].forEach(function(id){
     document.getElementById(id).addEventListener('input',function(){this.classList.remove('err');});
