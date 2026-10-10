@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://neural-logic.ru/sitemap.xml
